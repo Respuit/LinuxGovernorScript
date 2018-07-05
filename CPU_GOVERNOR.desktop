@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=CPU_G
+Comment=
+Exec=/path/to/CpuPowerOption.Switch.sh
+Icon=/path/to/icon
+Terminal=true
+Type=Application
+Name[en_GB.utf8]=Cpu_Mode
