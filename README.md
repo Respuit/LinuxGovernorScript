@@ -1,0 +1,1 @@
+You can use the .sh file alone or with the .desktop create an icon so you can just double click it.
