@@ -1,17 +1,23 @@
 #!/bin/bash
-#watch -n 0 "lscpu | grep 'MHz'"
+# You may Use this to inspect cpu clockage live:
+#  watch -n 0 "lscpu | grep 'MHz'"
 
 state=$( cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor )
 newState=""
-stringState="Now in *** "
-echo "	            The current state is [ $state ]"
-if [ $state == "ondemand" ] 
+echo -e "\tThe current state is [ $state ]"
+if [ $state != "performance" ] 
 then
-    echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
-    newState=$( cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor )	
-else
-    echo ondemand | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+    echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor >/dev/null
+    echo "$state" > /tmp/CpuPowerOptionSwitch.state
     newState=$( cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor )
+else
+    if [ ! -f /tmp/CpuPowerOptionSwitch.state ]; then
+        echo -e "\tCPU scaling already set to performance."
+        echo -e "\tCouldn't find a previously recorded state."
+        exit 1
+    fi
+    prevState=$( cat /tmp/CpuPowerOptionSwitch.state )
+    echo "$prevState" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor >/dev/null
+    newState=$( cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor )	
 fi
-#watch -n 0 "lscpu | grep 'MHz'"
-echo "			Now in *** $newState ***mode"
+echo -e "\tNow in *** $newState *** mode"
